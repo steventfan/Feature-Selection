@@ -41,21 +41,25 @@ Classifier::~Classifier()
 
 std::string Classifier::classify(std::string input)
 {
+    std::cout << "This dataset has " << size << " features with " << nodes.size() << " instances\n" << std::endl;
+    std::cout << "Running nearest neighbor classifier with K = 1 cross evaluation\n" << std::endl;
+    std::cout << "Beginning ";
     if(input == "1" || input == "2")
     {
-        std::cout << "Beginning Forward Selection Search\n" << std::endl;
-        std::cout << "--------------------------------------------------\n" << std::endl;
-
         unsigned int option;
 
         if(input == "1")
         {
             option = 0;
+            std::cout << "Forward Selection";
         }
         else
         {
             option = 1;
+            std::cout << "Backward Elimination";
         }
+        std::cout << " Search\n" << std::endl;
+        std::cout << "--------------------------------------------------\n" << std::endl;
 
         unsigned int * features = new unsigned int[size] {};
         unsigned int * owner = new unsigned int[size] {};
@@ -84,10 +88,10 @@ std::string Classifier::classify(std::string input)
                         }
                         print += std::to_string(j + 1);
                     }
-                    std::cout << "Using feature(s) {" << print << "} accuracy is ";
+                    std::cout << "Using feature(s) {" << print << "}, accuracy is ";
                     max = calculate(features);
                     std::cout << std::setprecision(4) << max * 100.0 << '%' << '\n' << std::endl;
-                    std::cout << "Feature set {" << print << "} was best, accuracy is " << std::setprecision(4) << max * 100.0 << '%' << '\n' << std::endl;
+                    std::cout << "Feature set {" << print << "} was the best subset with an accuracy of " << std::setprecision(4) << max * 100.0 << '%' << '\n' << std::endl;
                     std::cout << "--------------------------------------------------\n" << std::endl;
                 }
                 else if(i == size - 1)
@@ -118,7 +122,7 @@ std::string Classifier::classify(std::string input)
                             print += std::to_string(k + 1);
                         }
                     }
-                    std::cout << "Using feature(s) {" << print << "} accuracy is ";
+                    std::cout << "Using feature(s) {" << print << "}, accuracy is ";
                     percent = calculate(features);
                     std::cout << std::setprecision(4) << percent * 100.0 << '%' << std::endl;
                     features[j] = option;
@@ -166,7 +170,7 @@ std::string Classifier::classify(std::string input)
                     print += std::to_string(j + 1);
                 }
             }
-            std::cout << "Feature set {" << print << "} was best, accuracy is " << std::setprecision(4) << local * 100.0 << '%' << '\n' << std::endl;
+            std::cout << "Feature set {" << print << "} was the best subset with an accuracy of " << std::setprecision(4) << local * 100.0 << '%' << '\n' << std::endl;
             std::cout << "--------------------------------------------------\n" << std::endl;
         }
 
@@ -183,7 +187,7 @@ std::string Classifier::classify(std::string input)
                 print += std::to_string(i + 1);
             }
         }
-        std::cout << "Finished search. The best feature set is {" << print << "}, accuracy is " << std::setprecision(4) << max * 100.0 << '%' << '\n' << std::endl;
+        std::cout << "[Results] The best feature set is {" << print << "} with an accuracy of " << std::setprecision(4) << max * 100.0 << '%' << '\n' << std::endl;
     }
     do
     {
@@ -317,6 +321,7 @@ int main()
             }
         }while(input.empty());
     }while(input != "3");
+    std::cout << "----- [Terminating Program] -----" << std::endl;
 
     return 0;
 }
