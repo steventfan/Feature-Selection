@@ -4,6 +4,9 @@ Written in C++
 
 ## Versions
 ### ***16/12/2018***
+**Version 1.1.0**
+* Implemented new custom search algorithm that prioritizes runtime
+
 **Version 1.0.1**
 * Edits made to user interface
 
