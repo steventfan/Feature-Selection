@@ -50,7 +50,14 @@ std::string Classifier::classify(std::string input)
     if(input == "1" || input == "3")
     {
         option = 0;
-        std::cout << "Forward Selection";
+        if(input == "1")
+        {
+            std::cout << "Forward Selection";
+        }
+        else
+        {
+            std::cout << "Custom Search";
+        }
     }
     else
     {
