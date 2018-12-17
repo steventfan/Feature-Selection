@@ -1,8 +1,8 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <string>
 #include <sstream>
+#include <string>
 #include <vector>
 #include <cmath>
 
@@ -73,7 +73,7 @@ std::string Classifier::classify(std::string input)
     unsigned int count = 0;
     std::string print;
 
-    for(unsigned int i = 0; i < size; i++)
+    for(unsigned int i = 0; i < size - 1; i++)
     {
         print.clear();
         if(input == "2")
@@ -95,19 +95,29 @@ std::string Classifier::classify(std::string input)
                 std::cout << "Feature set {" << print << "} was the best subset with an accuracy of " << std::setprecision(4) << max * 100.0 << '%' << '\n' << std::endl;
                 std::cout << "--------------------------------------------------\n" << std::endl;
             }
-            else if(i == size - 1)
-            {
-                break;
-            }
         }
 
         unsigned int index;
         double local = 0.0;
+        std::vector<unsigned int> custom;
 
+        for(unsigned int k = 0; k < size; k++)
+        {
+            custom.push_back(k);
+        }
         for(unsigned int j = 0; j < size; j++)
         {
             double percent = 0.0;
+            unsigned int temp = j;
+            
+            if(input == "3")
+            {
+                unsigned int erase;
 
+                erase = rand() % custom.size();
+                j = custom.at(erase);
+                custom.erase(custom.begin() + erase);
+            }
             if(features[j] == option)
             {
                 features[j] = (option & ~1) | (~option & 1);
@@ -147,6 +157,10 @@ std::string Classifier::classify(std::string input)
                     }
                 }
             }
+            if(input == "3")
+            {
+                j = temp;
+            }
         }
         features[index] = (option & ~1) | (~option & 1);
 
@@ -164,7 +178,7 @@ std::string Classifier::classify(std::string input)
         {
             if(input == "3")
             {
-                std::cout << "Accuracy has decreased. Terminating search" << std::endl;
+                std::cout << "Accuracy has decreased. Terminating search." << std::endl;
 
                 break;
             }
@@ -325,6 +339,7 @@ int main()
             std::cout << std::endl;
             if(input == "1" || input == "2" || input == "3")
             {
+                srand(time(NULL));
                 input = classifier->classify(input);
             }
             else
