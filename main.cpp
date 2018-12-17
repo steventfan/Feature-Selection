@@ -44,124 +44,43 @@ std::string Classifier::classify(std::string input)
     std::cout << "This dataset has " << size << " features with " << nodes.size() << " instances\n" << std::endl;
     std::cout << "Running nearest neighbor classifier with K = 1 cross evaluation\n" << std::endl;
     std::cout << "Beginning ";
-    if(input == "1" || input == "2")
+
+    unsigned int option;
+
+    if(input == "1" || input == "3")
     {
-        unsigned int option;
+        option = 0;
+        std::cout << "Forward Selection";
+    }
+    else
+    {
+        option = 1;
+        std::cout << "Backward Elimination";
+    }
+    std::cout << " Search\n" << std::endl;
+    std::cout << "--------------------------------------------------\n" << std::endl;
 
-        if(input == "1")
+    unsigned int * features = new unsigned int[size] {};
+    unsigned int * owner = new unsigned int[size] {};
+
+    for(unsigned int i = 0; i < size; i++)
+    {
+        features[i] = option;
+        owner[i] = option;
+    }
+
+    double max = 0.0;
+    unsigned int count = 0;
+    std::string print;
+
+    for(unsigned int i = 0; i < size; i++)
+    {
+        print.clear();
+        if(input == "2")
         {
-            option = 0;
-            std::cout << "Forward Selection";
-        }
-        else
-        {
-            option = 1;
-            std::cout << "Backward Elimination";
-        }
-        std::cout << " Search\n" << std::endl;
-        std::cout << "--------------------------------------------------\n" << std::endl;
-
-        unsigned int * features = new unsigned int[size] {};
-        unsigned int * owner = new unsigned int[size] {};
-
-        for(unsigned int i = 0; i < size; i++)
-        {
-            *(features + i) = option;
-            *(owner + i) = option;
-        }
-
-        double max = 0.0;
-
-        for(unsigned int i = 0; i < size; i++)
-        {
-            std::string print = "";
-
-            if(input == "2")
+            if(i == 0)
             {
-                if(i == 0)
-                {
-                    for(unsigned int j = 0; j < size; j++)
-                    {
-                        if(!print.empty())
-                        {
-                            print += ", ";
-                        }
-                        print += std::to_string(j + 1);
-                    }
-                    std::cout << "Using feature(s) {" << print << "}, accuracy is ";
-                    max = calculate(features);
-                    std::cout << std::setprecision(4) << max * 100.0 << '%' << '\n' << std::endl;
-                    std::cout << "Feature set {" << print << "} was the best subset with an accuracy of " << std::setprecision(4) << max * 100.0 << '%' << '\n' << std::endl;
-                    std::cout << "--------------------------------------------------\n" << std::endl;
-                }
-                else if(i == size - 1)
-                {
-                    break;
-                }
-            }
-
-            unsigned int index;
-            double local = 0.0;
-
-            for(unsigned int j = 0; j < size; j++)
-            {
-                double percent = 0.0;
-
-                if(features[j] == option)
-                {
-                    features[j] = (option & ~1) | (~option & 1);
-                    print.clear();
-                    for(unsigned int k = 0; k < size; k++)
-                    {
-                        if(features[k] == 1)
-                        {
-                            if(!print.empty())
-                            {
-                                print += ", ";
-                            }
-                            print += std::to_string(k + 1);
-                        }
-                    }
-                    std::cout << "Using feature(s) {" << print << "}, accuracy is ";
-                    percent = calculate(features);
-                    std::cout << std::setprecision(4) << percent * 100.0 << '%' << std::endl;
-                    features[j] = option;
-                }
-                if(percent >= local)
-                {
-                    index = j;
-                    local = percent;
-                    if(local >= max)
-                    {
-                        for(unsigned int k = 0; k < size; k++)
-                        {
-                            *(owner + k) = features[k];
-                        }
-                        *(owner + j) = (option & ~1) | (~option & 1);
-                        max = local;
-                    }
-                }
-            }
-            features[index] = (option & ~1) | (~option & 1);
-
-            unsigned int j;
-
-            for(j = 0; j < size; j++)
-            {
-                if(features[j] != owner[j])
-                {
-                    break;
-                }
-            }
-            std::cout << std::endl;
-            if(j != size)
-            {
-                std::cout << "[Warning] Accuracy has decreased. Continuing search in case of local maxima." << std::endl;
-            }
-            print.clear();
-            for(unsigned int j = 0; j < size; j++)
-            {
-                if(features[j] == 1)
+                for(unsigned int j = 0; j < size; j++)
                 {
                     if(!print.empty())
                     {
@@ -169,26 +88,124 @@ std::string Classifier::classify(std::string input)
                     }
                     print += std::to_string(j + 1);
                 }
+                std::cout << "Using feature(s) {" << print << "}, accuracy is ";
+                max = calculate(features);
+                count++;
+                std::cout << std::setprecision(4) << max * 100.0 << '%' << '\n' << std::endl;
+                std::cout << "Feature set {" << print << "} was the best subset with an accuracy of " << std::setprecision(4) << max * 100.0 << '%' << '\n' << std::endl;
+                std::cout << "--------------------------------------------------\n" << std::endl;
             }
-            std::cout << "Feature set {" << print << "} was the best subset with an accuracy of " << std::setprecision(4) << local * 100.0 << '%' << '\n' << std::endl;
-            std::cout << "--------------------------------------------------\n" << std::endl;
+            else if(i == size - 1)
+            {
+                break;
+            }
         }
 
-        std::string print = "";
+        unsigned int index;
+        double local = 0.0;
 
-        for(unsigned int i = 0; i < size; i++)
+        for(unsigned int j = 0; j < size; j++)
         {
-            if(owner[i] == 1)
+            double percent = 0.0;
+
+            if(features[j] == option)
+            {
+                features[j] = (option & ~1) | (~option & 1);
+                print.clear();
+                for(unsigned int k = 0; k < size; k++)
+                {
+                    if(features[k] == 1)
+                    {
+                        if(!print.empty())
+                        {
+                            print += ", ";
+                        }
+                        print += std::to_string(k + 1);
+                    }
+                }
+                std::cout << "Using feature(s) {" << print << "}, accuracy is ";
+                percent = calculate(features);
+                count++;
+                std::cout << std::setprecision(4) << percent * 100.0 << '%' << std::endl;
+                features[j] = option;
+            }
+            if(percent >= local)
+            {
+                index = j;
+                local = percent;
+                if(local >= max)
+                {
+                    for(unsigned int k = 0; k < size; k++)
+                    {
+                        owner[k] = features[k];
+                    }
+                    owner[j] = (option & ~1) | (~option & 1);
+                    max = local;
+                    if(input == "3")
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        features[index] = (option & ~1) | (~option & 1);
+
+        unsigned int j;
+
+        for(j = 0; j < size; j++)
+        {
+            if(features[j] != owner[j])
+            {
+                break;
+            }
+        }
+        std::cout << std::endl;
+        if(j != size)
+        {
+            if(input == "3")
+            {
+                std::cout << "Accuracy has decreased. Terminating search" << std::endl;
+
+                break;
+            }
+            else
+            {
+                std::cout << "[Warning] Accuracy has decreased. Continuing search in case of local maxima." << std::endl;
+            }
+        }
+        print.clear();
+        for(unsigned int j = 0; j < size; j++)
+        {
+            if(features[j] == 1)
             {
                 if(!print.empty())
                 {
                     print += ", ";
                 }
-                print += std::to_string(i + 1);
+                print += std::to_string(j + 1);
             }
         }
-        std::cout << "[Results] The best feature set is {" << print << "} with an accuracy of " << std::setprecision(4) << max * 100.0 << '%' << '\n' << std::endl;
+        std::cout << "Feature set {" << print << "} was the best subset with an accuracy of " << std::setprecision(4) << local * 100.0 << '%' << '\n' << std::endl;
+        std::cout << "--------------------------------------------------\n" << std::endl;
     }
+    print.clear();
+    for(unsigned int i = 0; i < size; i++)
+    {
+        if(owner[i] == 1)
+        {
+            if(!print.empty())
+            {
+                print += ", ";
+            }
+            print += std::to_string(i + 1);
+        }
+    }
+    std::cout << "[Results] The best feature set is {" << print << "} with an accuracy of " << std::setprecision(4) << max * 100.0 << '%' << std::endl;
+    std::cout << "The algorithm searched through " << count << " nodes\n" << std::endl;
+
+    delete[] features;
+    delete[] owner;
+
     do
     {
         std::cout << "----- [Input Option] -----" << std::endl;
@@ -302,7 +319,7 @@ int main()
             std::cout << "----- [Enter Feature Selection Algorithm] -----" << std::endl;
             std::cout << "[1] Forward Selection" << std::endl;
             std::cout << "[2] Backward Elimination" << std::endl;
-            std::cout << "[3] Custom" << std::endl;
+            std::cout << "[3] Custom Search" << std::endl;
             std::cout << "> ";
             std::cin >> input;
             std::cout << std::endl;
